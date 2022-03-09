@@ -38,30 +38,6 @@ mongoose.connect(process.env.MONGO_URL, {
       console.log("Something wrong with DB connection")
   });
   
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-    console.log(req.body.name)
-  },
-});
-
-const upload = multer({storage : storage});
-app.post("/api/upload", upload.single("file"), async (req, res, next) => {
-  const {
-    file, body:{name} 
-  } = req
-if(file.detectedFileExtension != ".jpg") next(new Error("invalid file type"))
-  const fileName = name + Math.floor(Math.random * 1000)+file.detectedFileExtension
-
-  await pipeline(file.stream, fs.createWriteStream(`${__dirname}/images/${fileName}`))
-  console.log(req.file);
-
-  res.status(200).json("File has been uploaded");
-});
-
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
